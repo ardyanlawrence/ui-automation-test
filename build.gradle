@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.ardyan'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'io.cucumber:cucumber-junit:7.30.0'
+    testImplementation 'io.cucumber:cucumber-java:7.30.0'
+    // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.37.0'
+    // https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager
+    testImplementation 'io.github.bonigarcia:webdrivermanager:6.3.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+test {
+    useJUnit()
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+
+def tags = (findProperty('tags') == null) ? 'not @exclude' : findProperty('tags') + ' and not @exclude'
+
+tasks.register('cucumber') {
+    description("Running Cucumber Test")
+    dependsOn assemble, compileTestJava
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = [
+                    '--plugin', 'html:reports/test-report.html',
+                    '--plugin', 'pretty',
+                    '--glue', 'org.ardyan',
+                    '--tags', "${tags}",
+                    'src/test/resources'
+            ]
+        }
+    }
+}
