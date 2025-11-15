@@ -20,9 +20,9 @@ dependencies {
     testImplementation 'io.github.bonigarcia:webdrivermanager:6.3.2'
 }
 
-test {
-    useJUnitPlatform()
-}
+//test {
+//    useJUnitPlatform()
+//}
 
 test {
     useJUnit()
@@ -45,7 +45,7 @@ tasks.register('cucumber') {
             main = "io.cucumber.core.cli.Main"
             classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
             args = [
-                    '--plugin', 'html:reports/test-report.html',
+                    '--plugin', 'html:reports/cucumber.html',
                     '--plugin', 'pretty',
                     '--glue', 'org.ardyan',
                     '--tags', "${tags}",
